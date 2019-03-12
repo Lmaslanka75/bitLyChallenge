@@ -1,0 +1,169 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "proxima-nova","Helvetica Neue",Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-image: url("background-image.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    min-height: 370px ;
+    background-position: center;
+}
+
+code {
+    font-family: "proxima-nova","Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+#bitly-container{
+    /*background-image: url("images/background-image.png");*/
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 30vw;
+    width: 100%;
+    width: -moz-available;          /* WebKit-based browsers will ignore this. */
+    width: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
+}
+
+#navBarBitly{
+    background-color: transparent;
+    color: white;
+}
+
+#bitlyLogo {
+     width: 79px;
+    height: 36px;
+}
+
+/************ Page Title Area *********************************/
+
+#bitlyTitleArea {
+    background-color: transparent;
+}
+#titleTextGroup {
+
+}
+#titleText {
+    text-align: center;
+    color: white;
+    font-family: "brandon-grotesque","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight: 500;
+}
+
+
+/*********** Styling the link input area **************************/
+#url_input {
+    height: 50px;
+}
+
+#url_input:focus{
+    /*border: 2px #ee6123 solid;*/
+    outline-style: none;
+    border: #ee6123 1px solid;
+    color: #ee6123;
+}
+
+#url_input:focus:-webkit-autofill:focus {
+    border: 1px solid green;
+    -webkit-text-fill-color: green;
+    -webkit-box-shadow: 0 0 0px 1000px #000 inset;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+#bitlyInputGroup{
+    width: 100%;
+    position: initial;
+    text-align: center;
+}
+
+/******************************************************************/
+
+
+/*********** Styling the 'Shorten' button *************************/
+#btnShorten {
+    background-color: #ee6123;
+    color: white;
+    height: 50px;
+    vertical-align: top;
+}
+
+#btnShorten:hover {
+    background-color: #e45212;
+    box-shadow: lightgray;
+
+}
+/******************************************************************/
+
+/*********************** List of Links ************************/
+#bitlyListContainer {
+    margin-left: 20%;
+    margin-right: 20%;
+    /*border:2px black dashed;*/
+}
+
+.bitlyList {
+    list-style-type: none;
+    background-color: white;
+    padding: 1em;
+    margin-bottom: 0;
+}
+
+.bitlyListItem {
+    border: #9b9b9b;
+    padding: 1em;
+}
+
+
+/************ Responsive Styles ***********************************/
+
+/*Large Desktop View*/
+@media (min-width: 992px){
+
+    #bitlyInputGroup{
+        width: 100%;
+        position: initial;
+        text-align: center;
+    }
+
+    #url_input {
+        width:50%;
+    }
+
+}
+
+/*Medium / Tablet / Small Desktop View*/
+@media (min-width: 768px){
+
+    #bitlyInputGroup{
+        width: 100%;
+        position: initial;
+        text-align: center;
+    }
+
+    #url_input {
+        width:50%;
+    }
+
+}
+
+/*Mobile View*/
+@media (max-width: 534px){
+    .borderContainer{
+        width: 0;
+    }
+
+    #link-shortener-form{
+        width: 100%;
+        margin: 0;
+    }
+
+    #url_input {
+        width:45%;
+    }
+
+    #bitlyListContainer {
+        margin-left: 1em;
+        margin-right: 1em;
+    }
+}

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bitly Code Challenge</title>
+
+</head>
+
+<!--Bootstrap 4-->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.3/css/bootstrap.min.css"
+      integrity="sha384-MIwDKRSSImVFAZCVLtU0LMDdON6KVCrZHyVQQj6e8wIEJkW4tvwqXrbMIya1vriY" crossorigin="anonymous">
+
+<!--JQuery import-->
+<script
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous">
+</script>
+
+<!--Style Sheet-->
+<link rel="stylesheet" href="styles.css">
+
+<!--Importing Bitly SDK-->
+<script src="sdk.js"></script>
+
+<!--Checking that the SDK imported properly-->
+<script>
+    if (!BitlySDK) {
+        console.log("No Bitly SDK");
+    }
+    else {
+        console.log("Bitly SDK");
+        var bitlySDK = new BitlySDK({
+            //FAKE TOKEN
+            accessToken: 'r74yfy11ufqrd9wmftortraby4cc36xvb1v4o2ty'
+        });
+        if (bitlySDK) {
+            console.log(bitlySDK);
+        }
+    }
+</script>
+
+
+<script>
+    $(document).ready(function () {
+
+        //Array to hold shotened link responses
+       let bitLinksArrayObject = [
+      {
+            "global_hash": "2s3OtVe",
+            "hash": "2tZ6MeO",
+            "long_url": "https://dogecoin.com/",
+            "new_hash": 0,
+            "url": "http://bit.ly/2tZ6MeO"
+         }
+        ];
+
+        // Attach a submit handler to the form
+        $('#link-shortener-form').on('submit', function (e) {
+
+            // prevent the page from refreshing on submit
+            e.preventDefault();
+
+            $('#form-submit-message').text("");
+
+            // serialize form data to send to 'shortener' API
+            var formData = $('#link-shortener-form').serialize();
+
+            //log when the form is submitted
+            console.log("formData submitted: ", formData);
+
+            // Get url value from input on the page:
+            var $form = $(this),
+                term = $form.find("input[id='url_input']").val(),
+                url = $form.attr("action");
+
+            var httpReq = new XMLHttpRequest();
+            if( httpReq.status === (500 || 404 || null ) || promise.arguments.contains("Error") || !promise.resolve() )
+            {
+                var errorMessage = "We're sorry, there was an issue processing your request.";
+                $form.find('#form-submit-message').text(errorMessage);
+
+            }
+            else {
+                //Shorten API Call
+                bitlySDK.shorten(term).then(function (result) {
+                    bitlySDK.parseResponse();
+                    bitLinksArrayObject.push(result);
+                    console.log("bitLinksArrayObject: ", bitLinksArrayObject);
+                    console.log(result);
+                    updateBitlyList();
+                });
+            }
+
+            // Send the data using post
+            var posting = $.post(url, {url_input: term});
+
+            // Put the results in a div
+            posting.done(function (data) {
+                var content = $(data).find("#content");
+                $("#result").empty().append(content);
+            });
+
+            console.log("bitLinksArrayObject: ", bitLinksArrayObject);
+        });
+        // Create the list element:
+        var list = document.createElement('ul');
+        list.classList.add("bitlyList");
+        //
+        // //Filter Array for unique bitlinks
+        // var uniqueBitlinks = list.filter(onlyUnique);
+        // function onlyUnique(value, index, self) {
+        //     return self.indexOf(value) === index;
+        // }
+        // document.getElementById('bitlyListContainer').appendChild(uniqueBitlinks);
+        // document.getElementById('bitlyListContainer').appendChild(uniqueBitlinks);
+
+        bitLinksArrayObject.forEach(function (element) {
+            var listItem = document.createElement('li');
+            listItem.classList.add("bitlyListItem");
+            list.appendChild(listItem);
+            listItem.innerHTML += element.url;
+            $("ul").append(listItem);
+        });
+
+        function updateBitlyList() {
+            bitLinksArrayObject.forEach(function (element) {
+                var listItem = document.createElement('li');
+                listItem.classList.add("bitlyListItem");
+                list.appendChild(listItem);
+                listItem.innerHTML += element.url;
+                listItem.innerHTML += element.long_url;
+                // listItem.innerHTML += ;
+                $("ul").append(listItem);
+            });
+    }
+
+    });
+
+</script>
+
+<body>
+<div id="bitly-container">
+
+    <!--Navbar-->
+    <nav class="navbar navbar-expand-md" id="navBarBitly" role="navigation">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#nav-content"
+                aria-controls="nav-content" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Brand -->
+        <a class="navbar-brand">
+            <img id="bitlyLogo" style="max-height: 30px;" src="logo.svg">
+
+        </a>
+
+        <!-- Links -->
+        <div class="collapse navbar-collapse" id="nav-content">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link 1</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link 2</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link 3</a>
+                </li>
+            </ul>
+    </nav>
+
+    <!--Container for Form-->
+    <div class="link-shortener-form container-fluid mx-auto">
+
+        <div class="jumbotron" id="bitlyTitleArea">
+            <div id="titleTextGroup">
+                    <h1 id="titleText">
+                        <span>SHORTEN.</span>
+                        <span>SHARE.</span>
+                        <span>MEASURE.</span>
+                    </h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="borderContainer">&nbsp;</div>
+
+            <div id="form-submit-message"></div>
+
+                <!--Form Start-->
+                <form class="form-inline" id="link-shortener-form" action="/">
+                    <div class="form-row">
+
+                        <!--Link Shortener Input-->
+                        <div class="inline-block" id="bitlyInputGroup">
+                            <input id="url_input" type="text" name="url_input"
+                                   placeholder="Paste a link to shorten it" >
+                            <input id="btnShorten" type="submit" class="btn input-group-append " value="SHORTEN" onclick="updateBitlyList()">
+                        </div>
+                    </div>
+                </form>
+
+            <div col="borderContainer">&nbsp;</div>
+
+            <!-- the result of the search will be rendered inside this div -->
+            <div id="result"></div>
+
+           <div id="bitlyListContainer">
+
+           </div>
+        </div>
+
+
+    </div>
+
+</div>
+</body>
+</html>
