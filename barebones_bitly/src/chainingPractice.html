@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bitly Code Challenge</title>
+    <script src="bitlyChallenge.js"></script>
+
+</head>
+
+<!--Bootstrap 4-->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.3/css/bootstrap.min.css"
+      integrity="sha384-MIwDKRSSImVFAZCVLtU0LMDdON6KVCrZHyVQQj6e8wIEJkW4tvwqXrbMIya1vriY" crossorigin="anonymous">
+
+<!--JQuery import-->
+<script
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous">
+</script>
+
+<!--Style Sheet-->
+<link rel="stylesheet" href="styles.css">
+
+<!--Importing Bitly SDK-->
+<script src="sdk.js"></script>
+
+<script src="asq.all.js"></script>
+
+
+
+<!--Checking that the SDK imported properly-->
+<script>
+    if (!BitlySDK) {
+        console.log("No Bitly SDK");
+    }
+    else {
+        console.log("Bitly SDK");
+        var bitlySDK = new BitlySDK({
+            //FAKE TOKEN
+            accessToken: '9ca8123bef9554764ed10ba0737b547272d3ac58'
+        });
+        if (bitlySDK) {
+            console.log(bitlySDK);
+        }
+    }
+</script>
+
+
+<body>
+<div id="bitly-container">
+
+    <!--Navbar-->
+    <nav class="navbar navbar-expand-md inline-block" id="navBarBitly" role="navigation">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#nav-content"
+                aria-controls="nav-content" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Brand -->
+        <a class="navbar-brand">
+            <img id="bitlyLogo" src="logo.svg">
+        </a>
+
+        <!-- Links -->
+        <ul class="navbar-nav" id="bitlyNavLinks">
+            <li class="nav-item">
+                <a class="nav-link" href="#">Tour</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Enterprise</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Resources</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">About</a>
+            </li>
+        </ul>
+        <div class="collapse navbar-collapse" id="nav-content">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link 1</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link 2</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link 3</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!--Container for Form-->
+    <div class="link-shortener-form container-fluid mx-auto">
+
+        <div class="jumbotron" id="bitlyTitleArea">
+            <div id="titleTextGroup">
+                <h1 id="titleText">
+                    <span>SHORTEN.</span>
+                    <span>SHARE.</span>
+                    <span>MEASURE.</span>
+                </h1>
+            </div>
+            <div id="pageSlogan">Join Bitly, the world's leading link management platform</div>
+        </div>
+
+        <div class="container">
+            <!--input container-->
+            <div class="row">
+                <div id="form-submit-message"></div>
+
+                <!--Form Start-->
+                <form class="form-inline" id="link-shortener-form" action="/">
+                    <div class="form-row">
+
+                        <!--Link Shortener Input-->
+                        <div class="inline-block" id="bitlyInputGroup">
+                            <input id="url_input" type="text" name="url_input"
+                                   placeholder="Paste a link to shorten it">
+                            <input id="btnShorten" type="submit" class="btn input-group-append " value="SHORTEN">
+                        </div>
+                    </div>
+                </form>
+
+                <!-- the result of the search will be rendered inside this div -->
+                <div id="result"></div>
+
+
+            </div>
+
+            <!--List container-->
+            <div class="row">
+                <div id="bitlyListContainer">
+                    <ul class="bitlyList">
+                        <li class="bitlyListItem">
+
+                            <label>Title: Bulletproof Coffee: Debuning the hot</label>
+                            <p class="small longURL">
+                                http://localhost:63342/barebones_bitly/src/background-image.png?_ijt=iqkbu8v9hchupbeqa2bcjcpajg</p>
+
+                            <div class="inline-block">
+                                <span class="shortenedURL">
+                                    <span class="shortDomain">bit.ly</span>
+                                    <span class="globalHash">/2VSZBAV</span>
+                                </span>
+                                <!--Click Count-->
+                                <span class="clickCount">
+                                    <span class="global_clicks">34,908 </span>
+                                    <span class="clickLogoSpan"><img src="click-icon.png" height="17"
+                                                                     width="25"/></span>
+                                </span>
+                            </div>
+
+                            <hr>
+                        </li>
+
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    //Array to hold shotened link responses
+    let bitLinksArrayObject = [
+        {
+            "global_hash": "",
+            "short_url": "",
+            "long_url": "",
+            "global_clicks": '',
+            "user_hash": "",
+            "title": ""
+        }
+    ];
+
+    $(document).ready(function () {
+        var bitLinksArrayItem;
+        bitLinksArrayItem = {
+            "global_hash": "",
+            "short_url": "",
+            "long_url": "",
+            "global_clicks": '',
+            "user_hash": "",
+            "title": ""
+        };
+
+        function createListElement(element) {
+            let listItem = document.createElement("li");
+            listItem.classList.add("bitlyListItem");
+
+            let longURL = document.createElement("p");
+            longURL.classList.add("small");
+            longURL.classList.add("longURL");
+            longURL.innerHTML = element.long_url;
+
+            let detailsRow = document.createElement("div");
+            detailsRow.classList.add("inline-block");
+
+            let shortenedURL = document.createElement("span");
+            shortenedURL.classList.add("shortenedURL");
+
+            let shortDomain = document.createElement("span");
+            shortDomain.classList.add("shortDomain");
+            shortDomain.innerHTML = "bit.ly/";
+
+            let userHash = document.createElement("span");
+            userHash.classList.add("globalHash");
+            userHash.innerHTML = element.user_hash;
+
+            let clickCount = document.createElement("span");
+            clickCount.classList.add("clickCount");
+            let globalClicks = document.createElement("span");
+            globalClicks.classList.add("global_clicks");
+            globalClicks.innerHTML = element.global_clicks;
+
+            let clickLogoSpan = document.createElement("span");
+            clickLogoSpan.classList.add("clickLogoSpan");
+            let logoImage = document.createElement("img");
+            logoImage.src = "../src/click-icon.png";
+            let borderStyle = document.createElement("hr");
+
+            let urlTitle = document.createElement("label");
+
+            // Find title element
+            // if title not found set longURL to title
+            var found = jsonResponse.find(responseContainsPageTitle(entry));
+            console.log("Found Title ", found);
+            //set url to the title attribute returned by validator fn
+            urlTitle = found;
+            urlTitle.innerHTML = element.title;
+            //check if page contains a title element  -> T/F -> return the right value
+            function responseContainsPageTitle(entry) {
+                var makeURLTitle = false;
+                var titleForDisplayLabel;
+                //no title value
+                if( !entry.title || entry.title === "" || entry.title || entry === undefined) {
+                    makeURLTitle = true;
+                    titleForDisplayLabel = element.long_url;
+                }
+                else{
+                    console.log("found title ",element.title);
+                    titleForDisplayLabel = element.title;
+                    makeURLTitle = false;
+                }
+                return titleForDisplayLabel;
+            }
+
+            //glue the child elements together
+            shortenedURL.appendChild(shortDomain);
+            shortenedURL.appendChild(userHash);
+            clickLogoSpan.appendChild(logoImage);
+            clickCount.appendChild(globalClicks);
+            clickCount.appendChild(clickLogoSpan);
+            detailsRow.appendChild(shortenedURL);
+            detailsRow.appendChild(clickCount);
+
+            //append child elements to list item
+            listItem.appendChild(urlTitle);
+            listItem.appendChild(longURL);
+            listItem.appendChild(detailsRow);
+            listItem.appendChild(borderStyle);
+
+            $(".bitlyList").append(listItem);
+        }
+
+        // Attach a submit handler to the form
+        $("#link-shortener-form").on("submit", function (e) {
+            // prevent the page from refreshing on submit
+            e.preventDefault();
+
+            $('#form-submit-message').text("");
+
+            // Get url value from input on the page:
+            let $form = $(this),
+                term = $form.find("input[id='url_input']").val(),
+                url = $form.attr("action");
+
+            //function 1
+            //Shorten API Call
+            function shortenURL() {
+                bitlySDK.shorten(term)
+                    .then(results => {
+                        bitlySDK.parseResponse(results);
+                        console.log("got shorten results:", results);
+                        console.log("got data:", results.url);
+                        bitLinksArrayItem.short_url = results.url;
+                        bitLinksArrayItem.global_hash = results.global_hash;
+                        bitLinksArrayItem.user_hash = results.hash;
+                        return results.url;
+                    })
+            }
+
+            ASQ()
+
+         //   Function 2 -> expand -> long_url
+         /*       .then(url => {
+                        console.log("bitLinksArrayObject: ", bitLinksArrayObject);
+
+                        //Expand API Call
+                        bitlySDK.expand(url)
+                            .then(results => {
+                                bitlySDK.parseResponse(results);
+                                console.log("got expanded url :", results.long_url);
+                                bitLinksArrayItem.long_url = results.long_url;
+                                return results.long_url;
+                            })
+                    })*/
+
+                    // bitlySDK.info(url)
+                    //     .then(results => {
+                    //         bitlySDK.parseResponse(results);
+                    //         setTimeout(25000);
+                    //         bitLinksArrayItem.title = results.title;
+                    //     })
+
+                    /*
+                     refactoring thens
+                     TODO get clicks
+                      .then(
+                        Get Click Count
+                        bitlySDK.clicks(url)
+                            .then(results => {
+                                bitlySDK.parseResponse(results);
+                                results.forEach(function (element) {
+                                        console.log("1. Click Response Data", element);
+                                        var clicks = parseInt(element.global_clicks);
+
+                                        console.log("2. got clicks:", clicks);
+                                        bitLinksArrayItem.global_clicks = clicks;
+
+                                        console.log("3. got array item:", bitLinksArrayItem);
+
+                                        console.log("4. array item", bitLinksArrayItem);
+                                        console.log("5. array:", bitLinksArrayObject);
+                                    }
+                                );
+
+                                bitLinksArrayObject.push(bitLinksArrayItem);
+                                console.log("6. Push to array:", bitLinksArrayObject);
+                                // createListElement(bitLinksArrayItem);
+                                console.log("7. Create Element: ", bitLinksArrayItem);
+                            })*/
+                    // )
+
+      /*   refactoring thens
+      TODO: assign global clicks
+           .then(results => {
+                        bitlySDK.parseResponse(results);
+                        results.forEach(function (element) {
+                                console.log("1. Click Response Data", element);
+                                var clicks = parseInt(element.global_clicks);
+
+                                console.log("2. got clicks:", clicks);
+                                bitLinksArrayItem.global_clicks = clicks;
+
+                                console.log("3. got array item:", bitLinksArrayItem);
+
+                                console.log("4. array item", bitLinksArrayItem);
+                                console.log("5. array:", bitLinksArrayObject);
+                            }
+                        );
+                        bitLinksArrayObject.push(bitLinksArrayItem);
+                        console.log("6. Push to array:", bitLinksArrayObject);
+                        // createListElement(bitLinksArrayItem);
+                        console.log("7. Create Element: ", bitLinksArrayItem);
+                    });*/
+                });
+
+
+            // //Get Click Count
+            // bitlySDK.clicks(url)
+            //     .then(results => {
+            //         bitlySDK.parseResponse(results);
+            //         results.forEach(function (element) {
+            //                 console.log("1. Click Response Data", element);
+            //                 var clicks = parseInt(element.global_clicks);
+            //
+            //                 console.log("2. got clicks:", clicks);
+            //                 bitLinksArrayItem.global_clicks = clicks;
+            //
+            //                 console.log("3. got array item:", bitLinksArrayItem);
+            //
+            //                 console.log("4. array item", bitLinksArrayItem);
+            //                 console.log("5. array:", bitLinksArrayObject);
+            //             }
+            //         );
+            //
+            //         bitLinksArrayObject.push(bitLinksArrayItem);
+            //         console.log("6. Push to array:", bitLinksArrayObject);
+            //         // createListElement(bitLinksArrayItem);
+            //         console.log("7. Create Element: ", bitLinksArrayItem);
+            //     }).catch(e => {
+
+            function validateListObject(listItem) {
+                var isValidItem = false;
+                if (listItem.short_url && listItem.long_url) {
+                    // if (listItem.title && listItem.global_clicks) {
+                    isValidItem = true;
+                }
+                else {
+                    // switch (listItem) {
+                    //     case !(listItem.long_url):
+                    //         console.log(" long_url not found");
+                    //         isValidItem = false;
+                    //         break;
+                    //     case !(listItem.title):
+                    //         console.log("title not found");
+                    //         isValidItem = false;
+                    //         break;
+                    //
+                    // }
+                }
+            }
+    })
+
+</script>
+
+<!--My JS file for bitly API calls-->
+<script src="bitlyChallenge.js"></script>
+</body>
+</html>
